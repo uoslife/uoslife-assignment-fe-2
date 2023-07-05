@@ -1,6 +1,8 @@
 import ky from 'ky';
 
-export const apiClient = ky.create({
+export const API = ky.create({
   timeout: 10 * 1000,
-  prefixUrl: 'https://api.uoslife.com',
+  prefixUrl: 'https://api.escuelajs.co/api/v1',
 });
+
+export default API;
