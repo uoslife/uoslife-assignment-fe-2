@@ -8,18 +8,32 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('access_token');
-
     const checkLoggedIn = async () => {
       let isLoggedIn = false;
+
+      const accessToken = localStorage.getItem('access_token');
 
       if (accessToken) {
         const res = await API.get('auth/profile', {
           headers: { Authorization: 'Bearer ' + accessToken },
         });
 
-        if (res.status !== 401) {
+        if (res.ok) {
           isLoggedIn = true;
+        }
+        // 만료 case: access_token 재발급 시도
+        else if (res.status === 401) {
+          const refreshToken = localStorage.getItem('refresh_token');
+
+          if (refreshToken) {
+            const res = await API.get('auth/refresh-token', {
+              headers: { refreshToken },
+            });
+
+            if (res.ok) {
+              isLoggedIn = true;
+            }
+          }
         }
       }
 

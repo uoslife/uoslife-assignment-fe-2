@@ -9,18 +9,32 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('access_token');
-
     const checkLoggedIn = async () => {
       let isLoggedIn = false;
+
+      const accessToken = localStorage.getItem('access_token');
 
       if (accessToken) {
         const res = await API.get('auth/profile', {
           headers: { Authorization: 'Bearer ' + accessToken },
         });
 
-        if (res.status !== 401) {
+        if (res.ok) {
           isLoggedIn = true;
+        }
+        // 만료 case: access_token 재발급 시도
+        else if (res.status === 401) {
+          const refreshToken = localStorage.getItem('refresh_token');
+
+          if (refreshToken) {
+            const res = await API.get('auth/refresh-token', {
+              headers: { refreshToken },
+            });
+
+            if (res.ok) {
+              isLoggedIn = true;
+            }
+          }
         }
       }
 
@@ -53,15 +67,15 @@ const Login = () => {
 
       const login = async () => {
         try {
-          const json = await API.post('auth/login', {
+          const res = await API.post('auth/login', {
             body: JSON.stringify({ email, password }),
             headers: {
               'Content-Type': `application/json`,
             },
-          }).json();
+          });
 
-          // any는 임시방편
-          const { access_token, refresh_token } = json as any;
+          // any는 임시방편..
+          const { access_token, refresh_token } = (await res.json()) as any;
 
           localStorage.setItem('access_token', access_token);
           localStorage.setItem('refresh_token', refresh_token);
