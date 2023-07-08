@@ -1,7 +1,7 @@
 import styled from 'styled-components';
+import { signUp } from '../api/auth';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logIn } from '../api/auth';
 
 const Container = styled.div`
   display: flex;
@@ -24,12 +24,13 @@ const SubmitButton = styled.div`
   color: white;
 `;
 
-const Login = () => {
+const SignUp = () => {
   const [inputs, setInputs] = useState({
     email: '',
     password: '',
+    name: '',
   });
-  const { password, email } = inputs;
+  const { name, password, email } = inputs;
   const navigate = useNavigate();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,20 +41,20 @@ const Login = () => {
     });
   };
 
-  const handleLogIn = async () => {
+  const handleSighUp = async () => {
     try {
-      const response = await logIn({
+      const { status } = await signUp({
         email: inputs.email,
         password: inputs.password,
+        name: inputs.name,
+        role: 'customer',
+        avatar: 'https://picsum.photos/640/640?r=3276',
       });
-      const { access_token, refresh_token } = await response.json();
-
-      localStorage.setItem('access_token', access_token);
-      localStorage.setItem('refresh_token', refresh_token);
-
-      navigate('/main');
+      if (status === 201) {
+        navigate('/login');
+      }
     } catch (e) {
-      alert('로그인 항목을 양식에 맞게 모두 입력해주세요!');
+      alert('항목을 양식에 맞게 모두 기입해주세요!');
     }
   };
 
@@ -78,10 +79,16 @@ const Login = () => {
           value={password}
           onChange={onChange}
         />
+        <input
+          placeholder="이름"
+          name="name"
+          value={name}
+          onChange={onChange}
+        />
       </form>
-      <SubmitButton onClick={handleLogIn}>로그인</SubmitButton>
+      <SubmitButton onClick={handleSighUp}>회원가입</SubmitButton>
     </Container>
   );
 };
 
-export default Login;
+export default SignUp;
