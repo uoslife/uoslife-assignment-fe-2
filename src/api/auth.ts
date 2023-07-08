@@ -13,16 +13,16 @@ export type LogInRequest = {
   password: string;
 };
 
-const signUpAPI = async (data: SignUpRequest): Promise<Response> => {
+const signUp = async (data: SignUpRequest): Promise<Response> => {
   return API.post('users', { json: data });
 };
 
-const logInAPI = async (data: LogInRequest): Promise<Response> => {
+const logIn = async (data: LogInRequest): Promise<Response> => {
   return API.post('auth/login', { json: data });
 };
 
-const refreshTokenAPI = async (data: object | null): Promise<Response> => {
+const updateRefreshToken = async (data: object | null): Promise<Response> => {
   return API.post('auth/refresh-token', { json: data });
 };
 
-export { signUpAPI, logInAPI, refreshTokenAPI };
+export { signUp, logIn, updateRefreshToken };
