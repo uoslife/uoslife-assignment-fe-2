@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { signUpAPI } from '../api/auth';
+import { signUp } from '../api/auth';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,17 +42,19 @@ const SignUp = () => {
   };
 
   const handleSighUp = async () => {
-    const { status } = await signUpAPI({
-      email: inputs.email,
-      password: inputs.password,
-      name: inputs.name,
-      role: 'customer',
-      avatar: 'https://picsum.photos/640/640?r=3276',
-    });
-
-    if (status === 201) {
-      console.log('성공!');
-      navigate('/login');
+    try {
+      const { status } = await signUp({
+        email: inputs.email,
+        password: inputs.password,
+        name: inputs.name,
+        role: 'customer',
+        avatar: 'https://picsum.photos/640/640?r=3276',
+      });
+      if (status === 201) {
+        navigate('/login');
+      }
+    } catch (e) {
+      alert('항목을 양식에 맞게 모두 기입해주세요!');
     }
   };
 
@@ -66,14 +68,14 @@ const SignUp = () => {
         <input
           type="email"
           name="email"
-          placeholder="email"
+          placeholder="이메일"
           value={email}
           onChange={onChange}
         />
         <input
           type="password"
           name="password"
-          placeholder="password"
+          placeholder="비밀번호"
           value={password}
           onChange={onChange}
         />
