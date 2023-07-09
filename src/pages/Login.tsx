@@ -45,7 +45,7 @@ const Login = () => {
     };
 
     checkLoggedIn();
-  }, []);
+  }, [navigate]);
 
   const onChangeEmail = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,10 +89,12 @@ const Login = () => {
           console.log('Login Failed!');
         }
       };
+      console.log(1);
 
-      login();
+      if (email === '' || password === '') alert('똑바로쓰세요');
+      else login();
     },
-    [email, password],
+    [email, password, navigate],
   );
 
   return (

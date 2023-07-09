@@ -44,13 +44,13 @@ const Login = () => {
     };
 
     checkLoggedIn();
-  }, []);
+  }, [navigate]);
 
   const logout = useCallback(() => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     navigate('/');
-  }, []);
+  }, [navigate]);
 
   return (
     <>
