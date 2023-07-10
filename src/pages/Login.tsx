@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api';
 
@@ -14,6 +14,28 @@ const Login = () => {
   };
 
   const navigate = useNavigate();
+
+  const accessToken = localStorage.getItem('access_token');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const LoggedIn = async () => {
+      if (accessToken) {
+        const response = await API.get('auth/profile', {
+          headers: { Authorization: 'Bearer ' + accessToken },
+        });
+        if (response.ok) {
+          setIsLoggedIn(true);
+        }
+      }
+    };
+    if (accessToken && isLoggedIn) {
+      alert('페이지 접근 불가');
+      navigate('/main');
+    }
+
+    LoggedIn();
+  });
 
   const login = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
