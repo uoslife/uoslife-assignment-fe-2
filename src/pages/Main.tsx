@@ -1,7 +1,7 @@
 // import Category from '../components/Category';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import API from '../api';
+import { API, StayLoggedIn } from '../api';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const Login = () => {
           headers: { Authorization: 'Bearer ' + accessToken },
         });
         if (response.status === 401) {
-          logout();
+          StayLoggedIn();
         }
         if (response.ok) {
           setIsLoggedIn(true);

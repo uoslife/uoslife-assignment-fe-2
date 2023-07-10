@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../api';
+import { API, StayLoggedIn } from '../api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -24,6 +24,9 @@ const Login = () => {
         const response = await API.get('auth/profile', {
           headers: { Authorization: 'Bearer ' + accessToken },
         });
+        if (response.status === 401) {
+          StayLoggedIn();
+        }
         if (response.ok) {
           setIsLoggedIn(true);
         }
@@ -62,7 +65,7 @@ const Login = () => {
 
       login();
     },
-    [email, password],
+    [email, password, navigate],
   );
 
   return (
