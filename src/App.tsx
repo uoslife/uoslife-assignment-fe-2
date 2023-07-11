@@ -1,5 +1,8 @@
-import GlobalStyle from './GlobalStyle';
+import { useState } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
+import GlobalStyle from './GlobalStyle';
+
 import Login from './pages/Login';
 import Main from './pages/Main';
 
@@ -15,6 +18,7 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
+  const [islogin, setIsLogin] = useState(false);
   return (
     <>
       <GlobalStyle />
