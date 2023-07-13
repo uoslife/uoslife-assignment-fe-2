@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect } from 'react';
+import { useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../App';
 
@@ -14,7 +14,7 @@ const Main = () => {
     auth.logout();
 
     navigate('/');
-  }, [navigate]);
+  }, [navigate, auth]);
 
   if (!auth.isLogin) navigate('/');
 

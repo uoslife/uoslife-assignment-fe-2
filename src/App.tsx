@@ -27,10 +27,14 @@ const App = () => {
 
   useEffect(() => {
     const 뭐라짓지 = async () => {
-      const res = await checkLoggedIn();
+      try {
+        const res = await checkLoggedIn();
 
-      if (res.ok) setIsLogin(true);
-      else setIsLogin(false);
+        if (res.status !== 401) setIsLogin(true);
+        else setIsLogin(false);
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     뭐라짓지();
