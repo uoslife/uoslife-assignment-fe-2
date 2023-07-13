@@ -1,8 +1,9 @@
 import ky, { AfterResponseHook, BeforeRequestHook } from 'ky';
-import { updateRefreshToken } from './auth';
+import { getProfile, updateRefreshToken } from './auth';
 
 const afterResponse: AfterResponseHook = async (request, options, response) => {
   if (response.status === 401) {
+    // 401 에러 즉, 로그인이 안되있을 경우, 토큰 재삽입
     const refreshToken = localStorage.getItem('refresh_token');
 
     const res = await updateRefreshToken({ refreshToken });
@@ -12,8 +13,9 @@ const afterResponse: AfterResponseHook = async (request, options, response) => {
     localStorage.setItem('refresh_token', refresh_token);
   }
 };
-const beforeRequest: BeforeRequestHook = request => {
+const beforeRequest: BeforeRequestHook = async request => {
   const token = localStorage.getItem('token');
+
   if (token) request.headers.set('Authorization', `Bearer ${token}`);
 };
 export const API = ky.create({

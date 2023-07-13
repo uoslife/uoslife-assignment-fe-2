@@ -21,8 +21,14 @@ const logIn = async (data: LogInRequest): Promise<Response> => {
   return API.post('auth/login', { json: data });
 };
 
+const getProfile = async (token: string): Promise<Response> => {
+  return API.get('auth/profile', {
+    headers: { Authorization: 'Bearer ' + token },
+  });
+};
+
 const updateRefreshToken = async (data: object | null): Promise<Response> => {
   return API.post('auth/refresh-token', { json: data });
 };
 
-export { signUp, logIn, updateRefreshToken };
+export { signUp, logIn, getProfile, updateRefreshToken };

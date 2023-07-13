@@ -59,6 +59,7 @@ const Login = () => {
 
   useEffect(() => {
     if (localStorage.getItem('access_token')) navigate('/main');
+    // 토큰이 존재할 시, main으로 라우팅
   }, []);
 
   return (

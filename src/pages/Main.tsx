@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import { createCategory, getCategory } from '../api/category';
 import Category from '../components/Category';
+import { getProfile } from '../api/auth';
 
 const Container = styled.div`
   display: flex;
@@ -66,6 +67,7 @@ export type categoryType = {
 
 const Main = () => {
   const [categories, setCategories] = useState<categoryType[]>([]);
+  const [profile, setProfile] = useState('');
   const [inputs, setInputs] = useState({
     name: '',
     image: 'https://picsum.photos/640/640?r=7295',
@@ -83,11 +85,32 @@ const Main = () => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await getCategory();
+      // 카테고리 item 가져오기
       const data = await response.json();
       setCategories(data);
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const getProfileFunc = async () => {
+      const token = localStorage.getItem('access_token');
+
+      try {
+        const response = await getProfile(token!);
+        const result = await response.json();
+        setProfile(result.name);
+      } catch (error: any) {
+        if (error.response.status === 401) return;
+        // 토큰 만료 시(401 에러), ky의 afterResponse 훅이 다시 토큰 생성
+        alert('다시 로그인해주세요!');
+        navigate('/login');
+        // 로그아웃 상태에서 main 화면 접근시, 로그인 화면으로 라우팅
+      }
+    };
+
+    getProfileFunc();
   }, []);
 
   const handleLogOut = async () => {
@@ -134,7 +157,7 @@ const Main = () => {
           <Button onClick={handleCreateCategory}>생성하기</Button>
         </CreateBox>
         <LoginBox>
-          <div>로그인에 성공하셨습니다.</div>
+          <div>어서오세요 {profile}님 </div>
           <Button onClick={handleLogOut}>logout</Button>
         </LoginBox>
       </Header>
