@@ -1,51 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
-import API from '../api';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { loginRequest } from '../api';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../App';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkLoggedIn = async () => {
-      let isLoggedIn = false;
-
-      const accessToken = localStorage.getItem('access_token');
-
-      if (accessToken) {
-        const res = await API.get('auth/profile', {
-          headers: { Authorization: 'Bearer ' + accessToken },
-        });
-
-        if (res.ok) {
-          isLoggedIn = true;
-        }
-        // 만료 case: access_token 재발급 시도
-        else if (res.status === 401) {
-          const refreshToken = localStorage.getItem('refresh_token');
-
-          if (refreshToken) {
-            const res = await API.get('auth/refresh-token', {
-              headers: { refreshToken },
-            });
-
-            if (res.ok) {
-              isLoggedIn = true;
-            }
-          }
-        }
-      }
-
-      if (isLoggedIn) {
-        alert('이미로그인되어있음');
-        navigate('/main');
-      }
-    };
-
-    checkLoggedIn();
-  }, [navigate]);
 
   const onChangeEmail = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,45 +23,35 @@ const Login = () => {
     [],
   );
 
-  const login = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
+  const onSubmitLogin = useCallback(
+    async (email: string, password: string) => {
+      if (email === '' || password === '') alert('비어있는 필드가 존재합니다.');
+      else {
+        const res = await loginRequest(email, password);
+        if (res.ok) {
+          alert('로그인 성공!')!;
 
-      const login = async () => {
-        try {
-          const res = await API.post('auth/login', {
-            body: JSON.stringify({ email, password }),
-            headers: {
-              'Content-Type': `application/json`,
-            },
-          });
-
-          // any는 임시방편..
-          const { access_token, refresh_token } = (await res.json()) as any;
-
-          localStorage.setItem('access_token', access_token);
-          localStorage.setItem('refresh_token', refresh_token);
-
-          console.log('Login Complete!');
+          auth.login();
 
           navigate('/main');
-        } catch (error) {
-          console.log(error);
-
-          console.log('Login Failed!');
-        }
-      };
-      console.log(1);
-
-      if (email === '' || password === '') alert('똑바로쓰세요');
-      else login();
+        } else alert('로그인 실패!');
+      }
     },
-    [email, password, navigate],
+    [navigate],
   );
+
+  const auth = useContext(AuthContext);
+
+  if (auth.isLogin) navigate('/main');
 
   return (
     <>
-      <form onSubmit={login}>
+      <form
+        onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+          e.preventDefault();
+          onSubmitLogin(email, password);
+        }}
+      >
         <input
           value={email}
           onChange={onChangeEmail}
