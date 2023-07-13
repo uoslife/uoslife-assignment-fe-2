@@ -30,18 +30,17 @@ const Login = () => {
       if (email === '' || password === '') alert('비어있는 필드가 존재합니다.');
       else {
         try {
-          const res = await loginRequest(email, password);
-          console.log(res);
+          await loginRequest(email, password);
 
-          if (res.ok) {
-            alert('로그인 성공!')!;
+          auth.login();
 
-            auth.login();
+          alert('로그인 성공!');
 
-            navigate('/main');
-          } else alert('로그인 실패!');
+          navigate('/main');
         } catch (err) {
           console.log(err);
+
+          alert('로그인 실패!');
         }
       }
     },
