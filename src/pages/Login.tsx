@@ -1,7 +1,7 @@
-import { useCallback, useContext, useState } from 'react';
-import { loginRequest } from '../api';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../App';
+import { loginReq } from '../api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -30,24 +30,21 @@ const Login = () => {
       if (email === '' || password === '') alert('비어있는 필드가 존재합니다.');
       else {
         try {
-          await loginRequest(email, password);
-
-          auth.login();
-
-          alert('로그인 성공!');
-
-          navigate('/main');
-        } catch (err) {
-          console.log(err);
-
+          if ((await loginReq(email, password)).ok) {
+            alert('로그인 성공!');
+            auth.login();
+          } else throw new Error();
+        } catch (error) {
           alert('로그인 실패!');
         }
       }
     },
-    [navigate, auth],
+    [auth],
   );
 
-  if (auth.isLogin) navigate('/main');
+  useEffect(() => {
+    if (auth.isLogin) navigate('/main');
+  }, [auth, navigate]);
 
   return (
     <>

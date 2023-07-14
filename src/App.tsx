@@ -26,18 +26,11 @@ const App = () => {
   const [islogin, setIsLogin] = useState(false);
 
   useEffect(() => {
-    const 뭐라짓지 = async () => {
-      try {
-        const res = await checkLoggedIn();
-
-        if (res.status !== 401) setIsLogin(true);
-        else setIsLogin(false);
-      } catch (err) {
-        console.log(err);
-      }
+    const 변수명 = async () => {
+      setIsLogin(await checkLoggedIn());
     };
 
-    뭐라짓지();
+    변수명();
   }, []);
 
   return (
