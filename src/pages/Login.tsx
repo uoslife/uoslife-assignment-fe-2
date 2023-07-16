@@ -1,49 +1,20 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API, StayLoggedIn } from '../api';
+import { API, checkLoggedIn } from '../api';
+import { LoginContext } from '../App';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const emailChange = (event: any) => {
-    setEmail(event.target.value);
-  };
-  const passwordChange = (event: any) => {
-    setPassword(event.target.value);
-  };
+  const setIslogin = useContext(LoginContext);
 
   const navigate = useNavigate();
 
-  const accessToken = localStorage.getItem('access_token');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const LoggedIn = async () => {
-      if (accessToken) {
-        const response = await API.get('auth/profile', {
-          headers: { Authorization: 'Bearer ' + accessToken },
-        });
-        if (response.status === 401) {
-          StayLoggedIn();
-        }
-        if (response.ok) {
-          setIsLoggedIn(true);
-        }
-      }
-    };
-    if (accessToken && isLoggedIn) {
-      alert('페이지 접근 불가');
-      navigate('/main');
-    }
-
-    LoggedIn();
-  });
-
+  // 로그인 기능
   const login = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      const login = async () => {
+      const handleLogin = async () => {
         try {
           const response = await API.post('auth/login', {
             body: JSON.stringify({ email, password }),
@@ -57,16 +28,39 @@ const Login = () => {
           localStorage.setItem('access_token', access_token);
           localStorage.setItem('refresh_token', refresh_token);
 
+          setIslogin(true);
           navigate('/main');
         } catch (error) {
+          setIslogin(false);
           console.log(error);
         }
       };
-
-      login();
+      if (email === 'john@mail.com' && password === 'changeme') {
+        handleLogin();
+      }
     },
-    [email, password, navigate],
+    [email, password, navigate, setIslogin],
   );
+
+  const emailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+  const passwordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const accessToken = localStorage.getItem('access_token');
+
+  // 로그인 상태 유지 기능
+  useEffect(() => {
+    const restrictAccessToMain = async () => {
+      if (accessToken && (await checkLoggedIn())) {
+        alert('로그인 페이지 접근 불가');
+        navigate('/main');
+      }
+    };
+    restrictAccessToMain();
+  });
 
   return (
     <>

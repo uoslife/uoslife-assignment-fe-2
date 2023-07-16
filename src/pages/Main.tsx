@@ -1,42 +1,37 @@
 // import Category from '../components/Category';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { API, StayLoggedIn } from '../api';
+import { useEffect, useContext } from 'react';
+import { checkLoggedIn } from '../api';
+import { LoginContext } from '../App';
 
-const Login = () => {
+const Main = () => {
+  const setIslogin = useContext(LoginContext);
   const navigate = useNavigate();
+
+  // 로그아웃 기능
   const logout = () => {
-    localStorage.clear();
+    setIslogin(false);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     navigate('/');
   };
 
   const accessToken = localStorage.getItem('access_token');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  //비로그인 상태 유지 기능
   useEffect(() => {
-    const LoggedIn = async () => {
-      if (accessToken) {
-        const response = await API.get('auth/profile', {
-          headers: { Authorization: 'Bearer ' + accessToken },
-        });
-        if (response.status === 401) {
-          StayLoggedIn();
-        }
-        if (response.ok) {
-          setIsLoggedIn(true);
-        }
+    const restrictAccessToLogin = async () => {
+      if (!accessToken && !(await checkLoggedIn())) {
+        alert('메인 페이지 접근 불가');
+        navigate('/');
       }
     };
-    if (!accessToken && !isLoggedIn) {
-      alert('페이지 접근 불가');
-      navigate('/');
-    }
-
-    LoggedIn();
+    restrictAccessToLogin();
   });
 
   return (
     <>
+    {await checkLoggedIn()==='401'? <StayLoggedIn/>: }
       <button type="button" onClick={logout}>
         logout
       </button>
@@ -44,4 +39,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Main;
