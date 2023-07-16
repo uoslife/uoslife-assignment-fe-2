@@ -6,7 +6,7 @@ import { LoginContext } from '../App';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const setIslogin = useContext(LoginContext);
+  const data = useContext(LoginContext);
 
   const navigate = useNavigate();
 
@@ -28,10 +28,10 @@ const Login = () => {
           localStorage.setItem('access_token', access_token);
           localStorage.setItem('refresh_token', refresh_token);
 
-          setIslogin(true);
+          data.setIslogin(true);
           navigate('/main');
         } catch (error) {
-          setIslogin(false);
+          data.setIslogin(false);
           console.log(error);
         }
       };
@@ -39,7 +39,7 @@ const Login = () => {
         handleLogin();
       }
     },
-    [email, password, navigate, setIslogin],
+    [email, password, navigate, data],
   );
 
   const emailChange = (e: React.ChangeEvent<HTMLInputElement>) => {

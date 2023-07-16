@@ -1,6 +1,4 @@
 import ky from 'ky';
-import { useContext } from 'react';
-import { LoginContext } from '../App';
 
 // API 인스턴스 생성
 export const API = ky.create({
@@ -32,8 +30,7 @@ export const checkLoggedIn = async () => {
 };
 
 // acess token 만료시 refresh token을 받아와 로그인 상태를 유지
-export const StayLoggedIn = async () => {
-  const setIslogin = useContext(LoginContext);
+export const stayLoggedIn = async () => {
   const refreshToken = localStorage.getItem('refresh_token');
   if (refreshToken) {
     try {
@@ -42,7 +39,6 @@ export const StayLoggedIn = async () => {
       });
       const access_token = (await response.json()) as any;
       response.headers.set('Authorization', `token ${access_token}`);
-      setIslogin(true);
     } catch (error) {
       console.log(error);
     }

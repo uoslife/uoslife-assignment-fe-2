@@ -5,12 +5,12 @@ import { checkLoggedIn } from '../api';
 import { LoginContext } from '../App';
 
 const Main = () => {
-  const setIslogin = useContext(LoginContext);
+  const data = useContext(LoginContext);
   const navigate = useNavigate();
 
   // 로그아웃 기능
   const logout = () => {
-    setIslogin(false);
+    data.setIslogin(false);
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     navigate('/');
@@ -31,7 +31,6 @@ const Main = () => {
 
   return (
     <>
-    {await checkLoggedIn()==='401'? <StayLoggedIn/>: }
       <button type="button" onClick={logout}>
         logout
       </button>

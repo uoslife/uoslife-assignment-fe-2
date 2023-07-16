@@ -31,7 +31,7 @@ const App = () => {
   return (
     <>
       <GlobalStyle />
-      <LoginContext.Provider value={{ islogin, loginHandler }}>
+      <LoginContext.Provider value={{ islogin, setIslogin: loginHandler }}>
         <RouterProvider router={router} />
       </LoginContext.Provider>
     </>
