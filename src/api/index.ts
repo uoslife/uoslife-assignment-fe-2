@@ -1,4 +1,4 @@
-import ky from 'ky';
+import ky, { KyResponse } from 'ky';
 
 export const API = ky.create({
   timeout: 10 * 1000,
@@ -56,18 +56,25 @@ export const TODO_API = ky.create({
   prefixUrl: 'https://todo-assignment-cms.fly.dev/api/todos',
 });
 
-export const getTodo = async () => {
+export const getTodos: () => Promise<KyResponse> = async () => {
   return ky.get('');
 };
 
-export const postTodo = async (input: string) => {
+export const postTodo: (input: string) => Promise<KyResponse> = async (
+  input: string,
+) => {
   return ky.post('', { json: { data: { todo: input } } });
 };
 
-export const putTodo = async (input: string, id: number) => {
+export const putTodo: (
+  input: string,
+  id: number,
+) => Promise<KyResponse> = async (input: string, id: number) => {
   return ky.put(`${id}`, { json: { data: { todo: input } } });
 };
 
-export const deleteTodo = async (id: number) => {
+export const deleteTodo: (id: number) => Promise<KyResponse> = async (
+  id: number,
+) => {
   return ky.delete(`${id}`);
 };
