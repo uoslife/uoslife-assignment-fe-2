@@ -112,6 +112,127 @@ const App = () => {
 - src/api/index.ts 파일을 수정하여 구현해주세요.
 - 참고 문서: https://github.com/sindresorhus/ky#hooksafterresponse
 
+## Todo
+
+- Todo List를 작성합니다.
+- pages/Main.tsx 파일에 기능을 구현해주세요.
+- Todo에 사용되는 component를 분리해서 사용하면 좋습니다.
+- 만약 id: 3인 todo를 삭제하고, 새로운 todo를 작성하면 해당 todo의 id는 4가 됩니다. 이점 유의해주세요.
+- **가급적 API를 로직에서 직접 호출하지 말고, 사용하는 API를 폴더에 분리하여 구현해주세요.**
+
+### 수정 요구
+
+- Todo API가 추가됨에 따라 src/api/index.ts 파일을 아래와 같이 수정해주세요.
+
+```typescript
+import ky from 'ky';
+
+export const API = ky.create({
+  timeout: 10 * 1000,
+  prefixUrl: 'https://api.escuelajs.co/api/v1',
+});
+
+export const TODO_API = ky.create({
+  timeout: 10 * 1000,
+  prefixUrl: 'https://todo-assignment-cms.fly.dev/api/todos',
+});
+```
+
+- 이에 따라 기존 API를 import 해올 때 변경이 발생합니다.
+
+```typescript
+import API from 'src/api'; // 기존
+import { API } from 'src/api'; // 변경
+```
+
+### 요구사항 1. todo API를 이용하여 todo list를 불러와주세요
+
+```bash
+[GET] https://todo-assignment-cms.fly.dev/api/todos
+# Response
+{
+    "data": {
+        "id": 5,
+        "attributes": {
+            "todo": "test",
+            "createdAt": "2023-07-11T02:48:06.820Z",
+            "updatedAt": "2023-07-11T02:48:06.820Z",
+            "publishedAt": "2023-07-11T02:48:06.816Z"
+        }
+    },
+    "meta": {}
+}
+```
+
+### 요구사항 2. 새로운 todo를 생성합니다
+
+```bash
+[POST] https://todo-assignment-cms.fly.dev/api/todos
+# Body
+{
+  "data": {
+    "todo": "test"
+  }
+}
+# Response
+{
+    "data": {
+        "id": 5,
+        "attributes": {
+            "todo": "test",
+            "createdAt": "2023-07-11T02:48:06.820Z",
+            "updatedAt": "2023-07-11T02:48:06.820Z",
+            "publishedAt": "2023-07-11T02:48:06.816Z"
+        }
+    },
+    "meta": {}
+}
+```
+
+### 요구사항 3. 원하는 todo를 수정합니다
+
+```bash
+[PUT] https://todo-assignment-cms.fly.dev/api/todos/3
+# Body
+{
+  "data": {
+    "todo": "test3"
+  }
+}
+# Response
+{
+    "data": {
+        "id": 3,
+        "attributes": {
+            "todo": "test3",
+            "createdAt": "2023-07-11T02:48:06.820Z",
+            "updatedAt": "2023-07-11T02:48:06.820Z",
+            "publishedAt": "2023-07-11T02:48:06.816Z"
+        }
+    },
+    "meta": {}
+}
+```
+
+### 요구사항 4. 원하는 todo list를 삭제합니다
+
+```bash
+[DELETE] https://todo-assignment-cms.fly.dev/api/todos/5
+# Response
+{
+    "data": {
+        "id": 5,
+        "attributes": {
+            "todo": "test5",
+            "createdAt": "2023-07-11T02:48:06.820Z",
+            "updatedAt": "2023-07-11T02:48:06.820Z",
+            "publishedAt": "2023-07-11T02:48:06.816Z"
+        }
+    },
+    "meta": {}
+}
+```
+
 # 참고 문서 링크
 
 - https://github.com/sindresorhus/ky
