@@ -12,7 +12,7 @@
 - 기본적으로 스타일은 styled-components를 이용하여 구현합니다.
 - 라우팅은 react-router-dom(v6)을 이용하여 구현해주세요. 기본 환경 설정이 되어있습니다.
 - 개인 repository에 fork해서 과제 수행 후 PR을 올려주세요.
-- App.tsx, index.tsx, pages폴더 내부 파일은 변경하지 말아주세요.
+- index.tsx, pages폴더 내부 파일은 변경하지 말아주세요.
 
 ### API 관련
 
@@ -38,7 +38,7 @@ export default API;
 
 ## Auth
 
-### 요구사항 1.로그인 기능을 구현해주세요
+### 요구사항 1. 로그인 기능을 구현해주세요
 
 ```bash
 [POST] https://api.escuelajs.co/api/v1/auth/login
@@ -53,8 +53,9 @@ export default API;
 - 로그인 폼을 만들고 상기 API를 이용하여 예시 email, password를 입력 후 제출했을 때 Main page로 redirect하도록 구현해주세요.
 - access_token과 refresh_token은 localstorage에 저장해주세요.
 - 로그인 폼 디자인은 자유롭게 구현해도 좋습니다.
+- **(추가) 회원정보가 모두 입력되지 않았다면 API 요청을 보내지 않도록 구현해주세요.**
 
-### 요구사항 2.로그인 유지 기능을 구현해주세요
+### 요구사항 2. 로그인 유지 기능을 구현해주세요
 
 ```bash
 [GET] https://api.escuelajs.co/api/v1/auth/profile
@@ -66,17 +67,37 @@ export default API;
 
 - [API docs](https://fakeapi.platzi.com/en/rest/auth-jwt#get-user-with-session)
 - 브라우저 새로고침시에도 로그인이 유지되어야 합니다.
-- localstorage에 저장된 access_token을 이용하여 해당 API를 사용해주세요.
+- **(추가) src/api/index.ts 파일을 수정하여 구현해주세요.** : [참고문서](https://github.com/sindresorhus/ky#hooksafterresponse)
+- localstorage에 저장된 access_token을 이용하여 구현해주세요.
 - 해당 API의 response code가 401이라면 로그아웃되고 login페이지로 redirect되어야 합니다.
 - 로그인 상태에서 login페이지('/login')에 접근시 알림 문구와 함께 메인페이지로 redirect되어야 합니다.
 - 마찬가지로 로그아웃 상태에서 main페이지('/')에 접근시 알림 문구와 함께 login페이지로 redirect되어야 합니다.
 
-### 요구사항 3.로그아웃 기능을 구현해주세요
+### 요구사항 3. 로그아웃 기능을 구현해주세요
 
 - Main page의 로그아웃 버튼을 클릭하면 로그아웃되며 login페이지로 redirect되어야 합니다.
 - 로그아웃시 localstorage의 token정보를 삭제해주세요.
 
-### 추가 요구사항 1.access token 만료시 refresh token을 받아와 로그인 상태를 유지해주세요
+### (추가) 추가 요구사항 1. contextAPI를 사용하여 isLogin 상태를 전역상태로 관리해주세요.
+
+```typescript
+// src/App.tsx
+const App = () => {
+  const [islogin, setIsLogin] = useState(false); // 해당 코드가 추가되었습니다.
+  return (
+    <>
+      <GlobalStyle />
+      <RouterProvider router={router} />
+    </>
+  );
+};
+```
+
+- contextAPI를 사용하여 context를 App.tsx 파일에서 생성해주세요.
+- RouterProvider를 context로 감싸서 구현하면 됩니다.
+- isLogin 상태는 로그인과 로그아웃 버튼을 눌렀을 때, 그리고 '추가 요구사항 2'의 token 상태를 다룰 때 등의 상황에서 변경되어야 합니다.
+
+### 추가 요구사항 2.access token 만료시 refresh token을 받아와 로그인 상태를 유지해주세요
 
 ```bash
 [POST] https://api.escuelajs.co/api/v1/auth/refresh-token
@@ -90,14 +111,6 @@ export default API;
 - access token이 만료되었다면 응답 코드가 401이므로 기존 구현에서는 로그아웃되어야 하지만, 저장된 refresh token으로 새로운 access token을 발급받아 로그인을 유지시킬 수 있습니다.
 - src/api/index.ts 파일을 수정하여 구현해주세요.
 - 참고 문서: https://github.com/sindresorhus/ky#hooksafterresponse
-
-## Category
-
-### 요구사항 1.category API를 이용하여 category를 불러와주세요
-
-### 요구사항 2.category를 생성합니다
-
-### 요구사항 3.category를 삭제합니다
 
 # 참고 문서 링크
 

@@ -1,6 +1,7 @@
 import { useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../App';
+import { TodoList } from '../components/Todo';
 
 const Main = () => {
   const auth = useContext(AuthContext);
@@ -21,6 +22,7 @@ const Main = () => {
   return (
     <>
       <button type="button" onClick={logout}>
+        <TodoList />
         logout
       </button>
     </>
