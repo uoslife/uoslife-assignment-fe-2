@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getTodos } from '../../api';
-import { TodoType } from '../../types/todo.type';
+import { TodoItemType } from '../../types/todo.type';
 import { TodoInput } from './TodoInput';
 import { TodoItem } from './TodoItem';
 
 export const TodoList = () => {
-  const [todos, setTodos] = useState<TodoType[]>([]);
+  const [todos, setTodos] = useState<TodoItemType[]>([]);
 
   const loadTodos = useCallback(async () => {
-    const res = (await getTodos()).json() as any;
+    const res = (await (await getTodos()).json()) as any;
     const { data } = res;
 
     console.log('Todo Data Loaded: ', data);
@@ -22,10 +22,11 @@ export const TodoList = () => {
   return (
     <div>
       <h1>Todo List</h1>
-      <TodoInput loadTodos={loadTodos} />
-      {todos.map(todo => (
-        <TodoItem todo={todo} />
-      ))}
+      <TodoInput />
+      {todos &&
+        todos.map(todoItem => (
+          <TodoItem key={todoItem.id} todoItem={todoItem} />
+        ))}
     </div>
   );
 };

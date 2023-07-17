@@ -1,5 +1,5 @@
-export type TodoType = {
-  id: string;
+export type TodoItemType = {
+  id: number;
   attributes: {
     todo: string;
     createdAt: string;
