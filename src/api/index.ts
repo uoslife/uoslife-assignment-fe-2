@@ -57,24 +57,24 @@ export const TODO_API = ky.create({
 });
 
 export const getTodos: () => Promise<KyResponse> = async () => {
-  return ky.get('');
+  return TODO_API.get('');
 };
 
 export const postTodo: (input: string) => Promise<KyResponse> = async (
   input: string,
 ) => {
-  return ky.post('', { json: { data: { todo: input } } });
+  return TODO_API.post('', { json: { data: { todo: input } } });
 };
 
 export const putTodo: (
   input: string,
   id: number,
 ) => Promise<KyResponse> = async (input: string, id: number) => {
-  return ky.put(`${id}`, { json: { data: { todo: input } } });
+  return TODO_API.put(`${id}`, { json: { data: { todo: input } } });
 };
 
 export const deleteTodo: (id: number) => Promise<KyResponse> = async (
   id: number,
 ) => {
-  return ky.delete(`${id}`);
+  return TODO_API.delete(`${id}`);
 };
