@@ -21,8 +21,9 @@ const Main = () => {
 
   return (
     <>
+      <TodoList />
+
       <button type="button" onClick={logout}>
-        <TodoList />
         logout
       </button>
     </>
