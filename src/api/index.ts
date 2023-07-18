@@ -1,9 +1,13 @@
 import ky from 'ky';
 
-// API 인스턴스 생성
 export const API = ky.create({
   timeout: 10 * 1000,
   prefixUrl: 'https://api.escuelajs.co/api/v1',
+});
+
+export const TODO_API = ky.create({
+  timeout: 10 * 1000,
+  prefixUrl: 'https://todo-assignment-cms.fly.dev/api/todos',
 });
 
 // 로그인 상태 유무 점검

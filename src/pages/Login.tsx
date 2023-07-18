@@ -35,7 +35,9 @@ const Login = () => {
           console.log(error);
         }
       };
-      if (email === 'john@mail.com' && password === 'changeme') {
+      if (email === '' || password === '') {
+        alert('로그인 양식을 모두 입력하시오.');
+      } else {
         handleLogin();
       }
     },

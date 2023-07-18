@@ -1,8 +1,9 @@
 import GlobalStyle from './GlobalStyle';
-import { useState, createContext, useCallback } from 'react';
+import { useState, createContext, useCallback, useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Login from './pages/Login';
 import Main from './pages/Main';
+import { readTodo } from './api/todo';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,14 @@ const App = () => {
     },
     [setIslogin],
   );
+
+  useEffect(() => {
+    const a = async () => {
+      console.log(await (await readTodo()).json());
+    };
+    a();
+  }, []);
+
   return (
     <>
       <GlobalStyle />

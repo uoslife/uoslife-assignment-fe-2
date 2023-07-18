@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useContext } from 'react';
 import { checkLoggedIn } from '../api';
 import { LoginContext } from '../App';
+import TodoList from '../components/TodoList';
 
 const Main = () => {
   const data = useContext(LoginContext);
@@ -31,6 +32,7 @@ const Main = () => {
 
   return (
     <>
+      <TodoList />
       <button type="button" onClick={logout}>
         logout
       </button>
