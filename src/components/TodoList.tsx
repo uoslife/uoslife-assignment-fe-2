@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import TodoInput from './TodoInput';
 import { readTodo } from '../api/todo';
 import TodoItem from './TodoItem';
+import TodoListStyle from './TodoListStylr';
 
 const TodoList = () => {
   const [todoList, setTodoList] = useState([]);
@@ -20,14 +21,14 @@ const TodoList = () => {
   return (
     <>
       <TodoInput />
-      <div>
+      <TodoListStyle>
         <h1>To Do List</h1>
         {todoList.map((item: any) => (
           <div key={item.id}>
             <TodoItem text={item.attributes.todo} id={item.id} />
           </div>
         ))}
-      </div>
+      </TodoListStyle>
     </>
   );
 };
