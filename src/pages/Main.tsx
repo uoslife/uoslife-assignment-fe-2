@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
-import { createCategory, getCategory } from '../api/category';
-import Category from '../components/Category';
+import React, { useContext, useEffect, useState } from 'react';
 import { getProfile } from '../api/auth';
+import { createTodo, getTodo, updateTodo } from '../api/todo';
+import Todo from '../components/Todo';
+import todo from '../components/Todo';
+import { AuthenticationContext } from '../context/AuthentificationContext';
 
 const Container = styled.div`
   display: flex;
@@ -45,33 +47,52 @@ const Button = styled.div`
   color: white;
 `;
 
-const CategoryContainer = styled.div`
-  margin-top: 100px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 20px 50px;
+const SubmitButton = styled.button`
+  color: red;
 `;
 
-const CategoryWrapper = styled.div`
+const CategoryContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+`;
+
+const Modal = styled.div`
+  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 90vh;
+  background-color: rgba(0, 0, 0, 0.8);
 `;
-export type categoryType = {
-  id: string;
-  name: string;
-  image: string;
-  creationAt: string;
-  updateAt: string;
+
+export type todoAttributeType = {
+  todo: string;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type todosType = {
+  id: number;
+  attributes: todoAttributeType;
 };
 
 const Main = () => {
-  const [categories, setCategories] = useState<categoryType[]>([]);
+  const [todos, setTodos] = useState<todosType[]>([]);
+  const [isModal, setIsModal] = useState(false);
   const [profile, setProfile] = useState('');
+  const [itemNumber, setItemNumber] = useState<number>();
   const [inputs, setInputs] = useState({
-    name: '',
-    image: 'https://picsum.photos/640/640?r=7295',
+    createInput: '',
+    editInput: '',
   });
+
+  const { logout, handleGetProfile } = useContext(AuthenticationContext);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -80,59 +101,52 @@ const Main = () => {
       [name]: value,
     });
   };
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getCategory();
-      // 카테고리 item 가져오기
+      const response = await getTodo();
       const data = await response.json();
-      setCategories(data);
+      setTodos([...data.data]);
     };
 
     fetchData();
   }, []);
 
   useEffect(() => {
-    const getProfileFunc = async () => {
-      const token = localStorage.getItem('access_token');
-
-      try {
-        const response = await getProfile(token!);
-        const result = await response.json();
-        setProfile(result.name);
-      } catch (error: any) {
-        if (error.response.status === 401) return;
-        // 토큰 만료 시(401 에러), ky의 afterResponse 훅이 다시 토큰 생성
-        alert('다시 로그인해주세요!');
-        navigate('/login');
-        // 로그아웃 상태에서 main 화면 접근시, 로그인 화면으로 라우팅
-      }
-    };
-
-    getProfileFunc();
+    setProfile(handleGetProfile.name);
   }, []);
 
-  const handleLogOut = async () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+  const handleModal = async (id: number) => {
+    setItemNumber(id);
+    setIsModal(!isModal);
+  };
 
-    if (!localStorage.getItem('access_token')) {
-      navigate('/login');
-      alert('로그아웃에 성공하셨습니다.');
+  const handleAddTodo = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await createTodo({ todo: inputs.createInput });
+      const result = await response.json();
+      setTodos(prevState => [...prevState, result.data]);
+    } catch (e) {
+      alert('양식에 맞게 모두 입력해주세요!');
     }
   };
 
-  const handleCreateCategory = async () => {
+  const handleUpdateTodo = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
-      const response = await createCategory({
-        name: inputs.name,
-        image: inputs.image,
+      const response = await updateTodo(itemNumber!, {
+        todo: inputs.editInput,
       });
       const result = await response.json();
-      setCategories(prevState => [...prevState, result]);
+      const editedTodo = todos.find(todo => todo.id === itemNumber);
+      editedTodo!.attributes = result.data.attributes;
+      setTodos([...todos]);
+      setIsModal(!isModal);
     } catch (e) {
-      alert('양식에 맞게 모두 입력해주세요!');
+      console.error('에러 발생');
     }
   };
 
@@ -141,39 +155,51 @@ const Main = () => {
       <Header>
         <DummyBox />
         <CreateBox>
-          <input
-            name="name"
-            placeholder="이름"
-            value={inputs.name}
-            onChange={onChange}
-          />
-          <input
-            name="image"
-            type="url"
-            placeholder="사진의 url을 입력해주세요"
-            value={inputs.image}
-            onChange={onChange}
-          />
-          <Button onClick={handleCreateCategory}>생성하기</Button>
+          <form onSubmit={handleAddTodo}>
+            <input
+              placeholder="이름"
+              name="createInput"
+              value={inputs.createInput}
+              onChange={onChange}
+            />
+            <SubmitButton type="submit" onClick={() => handleAddTodo}>
+              생성하기
+            </SubmitButton>
+          </form>
         </CreateBox>
         <LoginBox>
           <div>어서오세요 {profile}님 </div>
-          <Button onClick={handleLogOut}>logout</Button>
+          <Button onClick={logout}>logout</Button>
         </LoginBox>
       </Header>
-      <CategoryWrapper>
-        <CategoryContainer>
-          {categories.map((item, i) => (
-            <Category
-              key={i}
-              name={item.name}
-              image={item.image}
-              id={parseInt(item.id)}
-              setCategory={setCategories}
+      <CategoryContainer>
+        {todos.map((item, i) => (
+          <Todo
+            key={i}
+            id={item.id}
+            title={item.attributes.todo}
+            setTodos={setTodos}
+            onClick={() => handleModal(item.id)}
+          />
+        ))}
+      </CategoryContainer>
+      {isModal && (
+        <Modal>
+          <form onSubmit={handleUpdateTodo}>
+            <input
+              placeholder="수정할 내용을 적어주세요."
+              type="text"
+              value={inputs.editInput}
+              name="editInput"
+              onChange={onChange}
             />
-          ))}
-        </CategoryContainer>
-      </CategoryWrapper>
+            <SubmitButton type="submit" onClick={() => handleUpdateTodo}>
+              수정하기
+            </SubmitButton>
+          </form>
+          <div>모달임</div>
+        </Modal>
+      )}
     </Container>
   );
 };

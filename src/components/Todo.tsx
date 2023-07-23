@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { deleteCategory } from '../api/category';
 import React, { SetStateAction } from 'react';
-import { categoryType } from '../pages/CategoryPage';
+import { todosType } from '../pages/Main';
+import { deleteTodo } from '../api/todo';
 
 const Container = styled.div`
   display: flex;
@@ -13,6 +13,7 @@ const Container = styled.div`
 const TitleBox = styled.div`
   display: flex;
   justify-content: space-between;
+  gap: 5px;
 `;
 
 const DeleteButton = styled.div`
@@ -20,39 +21,32 @@ const DeleteButton = styled.div`
   border: 1px solid black;
 `;
 
-const Image = styled.img`
-  width: 200px;
-  height: 200px;
-`;
-
-type createCategoryType = {
-  name: string;
-  image: string;
+type createTodoType = {
+  title: string;
   id: number;
-  setCategory: React.Dispatch<SetStateAction<categoryType[]>>;
+  setTodos: React.Dispatch<SetStateAction<todosType[]>>;
+  onClick: () => void;
 };
 
-const Category = ({ name, image, id, setCategory }: createCategoryType) => {
+const Todo = ({ title, id, setTodos, onClick }: createTodoType) => {
   const handleDeleteCategory = (id: number) => async () => {
     try {
-      await deleteCategory(id);
+      await deleteTodo(id);
     } catch (e) {
       console.error(e);
     }
-    setCategory(prevState =>
-      prevState.filter(category => parseInt(category.id) !== id),
-    );
+    setTodos(prevState => prevState.filter(todo => todo.id !== id));
   };
 
   return (
     <Container>
       <TitleBox>
-        <h3>{name}</h3>
+        <h3>{title}</h3>
+        <DeleteButton onClick={onClick}>수정하기</DeleteButton>
         <DeleteButton onClick={handleDeleteCategory(id)}>삭제하기</DeleteButton>
       </TitleBox>
-      <Image src={image} alt={name} />
     </Container>
   );
 };
 
-export default Category;
+export default Todo;

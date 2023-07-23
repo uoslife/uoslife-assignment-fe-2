@@ -1,30 +1,20 @@
 import GlobalStyle from './GlobalStyle';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
 import Main from './pages/Main';
 import SighUp from './pages/SighUp';
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <SighUp />,
-  },
-  {
-    path: '/login',
-    element: <Login />,
-  },
-  {
-    path: '/main',
-    element: <Main />,
-  },
-]);
+import { AuthenticationContextProvider } from './context/AuthentificationContext';
 
 const App = () => {
   return (
-    <>
+    <AuthenticationContextProvider>
       <GlobalStyle />
-      <RouterProvider router={router} />
-    </>
+      <Routes>
+        <Route path="/" element={<SighUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/main" element={<Main />} />
+      </Routes>
+    </AuthenticationContextProvider>
   );
 };
 

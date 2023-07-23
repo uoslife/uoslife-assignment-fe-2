@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 import { signUp } from '../api/auth';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthenticationContext } from '../context/AuthentificationContext';
 
 const Container = styled.div`
   display: flex;
@@ -32,6 +33,7 @@ const SignUp = () => {
   });
   const { name, password, email } = inputs;
   const navigate = useNavigate();
+  const { handleSignUp } = useContext(AuthenticationContext);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -43,6 +45,7 @@ const SignUp = () => {
 
   const handleSighUp = async () => {
     try {
+      const signUpValue = localStorage.getItem('signUpValue');
       const { status } = await signUp({
         email: inputs.email,
         password: inputs.password,
@@ -51,6 +54,7 @@ const SignUp = () => {
         avatar: 'https://picsum.photos/640/640?r=3276',
       });
       if (status === 201) {
+        handleSignUp();
         navigate('/login');
       }
     } catch (e) {

@@ -1,7 +1,8 @@
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logIn } from '../api/auth';
+import { AuthenticationContext } from '../context/AuthentificationContext';
 
 const Container = styled.div`
   display: flex;
@@ -31,6 +32,7 @@ const Login = () => {
   });
   const { password, email } = inputs;
   const navigate = useNavigate();
+  const { login } = useContext(AuthenticationContext);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -80,7 +82,9 @@ const Login = () => {
           onChange={onChange}
         />
       </form>
-      <SubmitButton onClick={handleLogIn}>로그인</SubmitButton>
+      <SubmitButton onClick={() => login(inputs.email, inputs.password)}>
+        로그인
+      </SubmitButton>
     </Container>
   );
 };
