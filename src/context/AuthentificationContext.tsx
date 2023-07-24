@@ -47,7 +47,7 @@ export const AuthenticationContextProvider = ({ children }: any) => {
     localStorage.setItem('refresh_token', refresh_token);
   };
 
-  const handleLogin = useCallback(async (email: string, password: string) => {
+  const handleLogin = async (email: string, password: string) => {
     try {
       const response = await logIn({
         email: email,
@@ -62,7 +62,7 @@ export const AuthenticationContextProvider = ({ children }: any) => {
     } catch (e) {
       alert('로그인 항목을 양식에 맞게 모두 입력해주세요!');
     }
-  }, []);
+  };
 
   const handleLogout = useCallback(async () => {
     localStorage.removeItem('access_token');
@@ -72,7 +72,7 @@ export const AuthenticationContextProvider = ({ children }: any) => {
       alert('로그아웃에 성공하셨습니다.');
       return navigate('/login');
     }
-  }, []);
+  }, [isAuthenticated, setIsAuthenticated]);
 
   const handleSignUp = () => {
     localStorage.setItem('isSignUp', String(true));
@@ -92,11 +92,25 @@ export const AuthenticationContextProvider = ({ children }: any) => {
     // refreshToken이 없으면 login, 있으면 accessToken 발급
     if (!refreshToken) return navigate('./login');
     await handleUpdateRefreshToken(refreshToken!);
-  }, [isAuthenticated, setIsAuthenticated]);
+  }, [
+    isAuthenticated,
+    setIsAuthenticated,
+    handleLogin,
+    handleLogout,
+    handleGetProfile,
+    handleSignUp,
+  ]);
 
   useEffect(() => {
     initialize();
-  }, [isAuthenticated, setIsAuthenticated]);
+  }, [
+    isAuthenticated,
+    setIsAuthenticated,
+    handleLogin,
+    handleLogout,
+    handleGetProfile,
+    handleSignUp,
+  ]);
 
   return (
     <AuthenticationContext.Provider
