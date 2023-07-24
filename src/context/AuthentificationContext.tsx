@@ -14,30 +14,31 @@ type AuthContextType = {
   setIsAuthenticated: Dispatch<SetStateAction<boolean>>;
   handleLogin: (email: string, password: string) => Promise<void>;
   handleLogout: () => Promise<void>;
-  handleGetProfile: (accessToken: string) => Promise<void>;
   handleSignUp: () => void;
+  // handleGetProfile: () => Promise<void>;
 };
 export const AuthenticationContext = createContext<AuthContextType>({
   isAuthenticated: false,
   setIsAuthenticated: () => {},
   handleLogin: async () => {},
   handleLogout: async () => {},
-  handleGetProfile: async () => {},
   handleSignUp: () => {},
+  // handleGetProfile: async () => {},
 });
 
 export const AuthenticationContextProvider = ({ children }: any) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
-  const handleGetProfile = async (accessToken: string) => {
-    try {
-      const response = await getProfile(accessToken);
-      return await response.json();
-    } catch (e: any) {
-      return e.response.status;
-    }
-  };
+  // const handleGetProfile = async () => {
+  //   const accessToken = localStorage.getItem('access_token');
+  //   try {
+  //     const response = await getProfile(accessToken!);
+  //     return await response.json();
+  //   } catch (e: any) {
+  //     return e.response.status;
+  //   }
+  // };
 
   const handleUpdateRefreshToken = async (refreshToken: string) => {
     const res = await updateRefreshToken({ refreshToken });
@@ -78,7 +79,7 @@ export const AuthenticationContextProvider = ({ children }: any) => {
     localStorage.setItem('isSignUp', String(true));
   };
 
-  const initialize = useCallback(async () => {
+  const initialize = async () => {
     const accessToken = localStorage.getItem('access_token');
     const refreshToken = localStorage.getItem('refresh_token');
     const signUpValue = localStorage.getItem('isSignUp');
@@ -92,25 +93,11 @@ export const AuthenticationContextProvider = ({ children }: any) => {
     // refreshToken이 없으면 login, 있으면 accessToken 발급
     if (!refreshToken) return navigate('./login');
     await handleUpdateRefreshToken(refreshToken!);
-  }, [
-    isAuthenticated,
-    setIsAuthenticated,
-    handleLogin,
-    handleLogout,
-    handleGetProfile,
-    handleSignUp,
-  ]);
+  };
 
   useEffect(() => {
     initialize();
-  }, [
-    isAuthenticated,
-    setIsAuthenticated,
-    handleLogin,
-    handleLogout,
-    handleGetProfile,
-    handleSignUp,
-  ]);
+  }, []);
 
   return (
     <AuthenticationContext.Provider
@@ -119,8 +106,8 @@ export const AuthenticationContextProvider = ({ children }: any) => {
         setIsAuthenticated,
         handleLogin,
         handleLogout,
-        handleGetProfile,
         handleSignUp,
+        // handleGetProfile,
       }}
     >
       {children}

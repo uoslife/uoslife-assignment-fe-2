@@ -92,7 +92,7 @@ const Main = () => {
     editInput: '',
   });
 
-  const { handleLogout, handleGetProfile } = useContext(AuthenticationContext);
+  const { handleLogout } = useContext(AuthenticationContext);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -115,7 +115,15 @@ const Main = () => {
   }, []);
 
   useEffect(() => {
-    setProfile(handleGetProfile.name);
+    const getProfileFunc = async () => {
+      const token = localStorage.getItem('access_token');
+
+      const response = await getProfile(token!);
+      const result = await response.json();
+      setProfile(result.name);
+    };
+
+    getProfileFunc();
   }, []);
 
   const handleModal = async (id: number) => {
