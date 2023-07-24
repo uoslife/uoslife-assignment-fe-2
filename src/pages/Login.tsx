@@ -32,7 +32,7 @@ const Login = () => {
   });
   const { password, email } = inputs;
   const navigate = useNavigate();
-  const { login } = useContext(AuthenticationContext);
+  const { handleLogin } = useContext(AuthenticationContext);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -82,7 +82,7 @@ const Login = () => {
           onChange={onChange}
         />
       </form>
-      <SubmitButton onClick={() => login(inputs.email, inputs.password)}>
+      <SubmitButton onClick={() => handleLogin(inputs.email, inputs.password)}>
         로그인
       </SubmitButton>
     </Container>

@@ -12,27 +12,22 @@ import { useNavigate } from 'react-router-dom';
 type AuthContextType = {
   isAuthenticated: boolean;
   setIsAuthenticated: Dispatch<SetStateAction<boolean>>;
-  isSignUp: boolean;
-  setIsSignUp: Dispatch<SetStateAction<boolean>>;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  handleLogin: (email: string, password: string) => Promise<void>;
+  handleLogout: () => Promise<void>;
   handleGetProfile: (accessToken: string) => Promise<void>;
   handleSignUp: () => void;
 };
 export const AuthenticationContext = createContext<AuthContextType>({
   isAuthenticated: false,
   setIsAuthenticated: () => {},
-  isSignUp: false,
-  setIsSignUp: () => {},
-  login: async () => {},
-  logout: async () => {},
+  handleLogin: async () => {},
+  handleLogout: async () => {},
   handleGetProfile: async () => {},
   handleSignUp: () => {},
 });
 
 export const AuthenticationContextProvider = ({ children }: any) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
 
   const handleGetProfile = async (accessToken: string) => {
@@ -52,24 +47,7 @@ export const AuthenticationContextProvider = ({ children }: any) => {
     localStorage.setItem('refresh_token', refresh_token);
   };
 
-  const initialize = useCallback(async () => {
-    localStorage.setItem('isSingUp', String(isSignUp));
-    const accessToken = localStorage.getItem('access_token');
-    const refreshToken = localStorage.getItem('refresh_token');
-    const signUpValue = localStorage.getItem('isSignUp');
-
-    console.log(signUpValue);
-    if (!signUpValue) return navigate('./');
-
-    // accessToken이 있는 경우 불필요한 로직 실행 중지.
-    if (accessToken) return;
-
-    // refreshToken이 없으면 login, 있으면 accessToken 발급
-    if (!refreshToken) return navigate('./login');
-    await handleUpdateRefreshToken(refreshToken!);
-  }, [isAuthenticated, setIsAuthenticated]);
-
-  const login = useCallback(async (email: string, password: string) => {
+  const handleLogin = useCallback(async (email: string, password: string) => {
     try {
       const response = await logIn({
         email: email,
@@ -86,7 +64,7 @@ export const AuthenticationContextProvider = ({ children }: any) => {
     }
   }, []);
 
-  const logout = useCallback(async () => {
+  const handleLogout = useCallback(async () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
 
@@ -97,9 +75,24 @@ export const AuthenticationContextProvider = ({ children }: any) => {
   }, []);
 
   const handleSignUp = () => {
-    setIsSignUp(true);
-    localStorage.setItem('isSingUp', String(isSignUp));
+    localStorage.setItem('isSignUp', String(true));
   };
+
+  const initialize = useCallback(async () => {
+    const accessToken = localStorage.getItem('access_token');
+    const refreshToken = localStorage.getItem('refresh_token');
+    const signUpValue = localStorage.getItem('isSignUp');
+
+    // 회원가입이 안되있을 경우 회원가입 창으로 라우팅
+    if (!signUpValue) return navigate('./');
+
+    // accessToken이 있는 경우 불필요한 로직 실행 중지.
+    if (accessToken) return;
+
+    // refreshToken이 없으면 login, 있으면 accessToken 발급
+    if (!refreshToken) return navigate('./login');
+    await handleUpdateRefreshToken(refreshToken!);
+  }, [isAuthenticated, setIsAuthenticated]);
 
   useEffect(() => {
     initialize();
@@ -110,10 +103,8 @@ export const AuthenticationContextProvider = ({ children }: any) => {
       value={{
         isAuthenticated,
         setIsAuthenticated,
-        isSignUp,
-        setIsSignUp,
-        login,
-        logout,
+        handleLogin,
+        handleLogout,
         handleGetProfile,
         handleSignUp,
       }}

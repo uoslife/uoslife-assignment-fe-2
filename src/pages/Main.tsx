@@ -92,7 +92,7 @@ const Main = () => {
     editInput: '',
   });
 
-  const { logout, handleGetProfile } = useContext(AuthenticationContext);
+  const { handleLogout, handleGetProfile } = useContext(AuthenticationContext);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -169,7 +169,7 @@ const Main = () => {
         </CreateBox>
         <LoginBox>
           <div>어서오세요 {profile}님 </div>
-          <Button onClick={logout}>logout</Button>
+          <Button onClick={handleLogout}>logout</Button>
         </LoginBox>
       </Header>
       <CategoryContainer>
